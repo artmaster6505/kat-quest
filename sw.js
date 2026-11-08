@@ -1,7 +1,7 @@
 // 離線快取:改版時把 VERSION 加一
 // 2026-11-07:圖片放獨立的 IMG 快取(改版不清掉、快取優先,省流量又快);
 // 頁面網路優先但 3 秒沒回應就先用快取(車上/訊號差時不會卡白畫面)
-const VERSION = 'kq-enc-v31';
+const VERSION = 'kq-enc-v32';
 const IMG = 'kq-img-v1';
 const FILES = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
