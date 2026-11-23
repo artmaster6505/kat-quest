@@ -1,18 +1,20 @@
 // 離線快取:改版時把 VERSION 加一
 // 2026-11-07:圖片放獨立的 IMG 快取(改版不清掉、快取優先,省流量又快);
 // 頁面網路優先但 3 秒沒回應就先用快取(車上/訊號差時不會卡白畫面)
-const VERSION = 'kq-enc-v49';
+const VERSION = 'kq-enc-v50';
 const IMG = 'kq-img-v1';
+const AUD = 'kq-aud-v1';   // 2026-11-23 預錄語音(audio/*.mp3):和圖片一樣獨立快取、快取優先、改版不清
 const FILES = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
-self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSION && k !== IMG).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
+self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSION && k !== IMG && k !== AUD).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
+const isAud = u => /\/audio\/[0-9a-z]+\.mp3$/i.test(u.pathname);
 const isImg = u => /\.(webp|png|svg|jpg|jpeg)$/i.test(u.pathname) && !u.pathname.includes('/icons/');
 self.addEventListener('fetch', e => {
   // 只處理本站檔案;同步服務等跨網域請求直接放行
   const u = new URL(e.request.url);
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
-  if (isImg(u)) {
-    e.respondWith(caches.open(IMG).then(c => c.match(e.request, { ignoreSearch: true }).then(hit => hit || fetch(e.request).then(r => { if (r.ok) c.put(e.request, r.clone()); return r; }))));
+  if (isImg(u) || isAud(u)) {
+    e.respondWith(caches.open(isAud(u) ? AUD : IMG).then(c => c.match(e.request, { ignoreSearch: true }).then(hit => hit || fetch(e.request).then(r => { if (r.ok) c.put(e.request, r.clone()); return r; }))));
     return;
   }
   const net = fetch(e.request).then(r => { const cp = r.clone(); if (r.ok) caches.open(VERSION).then(c => c.put(e.request, cp)); return r; });
