@@ -1,7 +1,7 @@
 // 離線快取:改版時把 VERSION 加一
 // 2026-11-07:圖片放獨立的 IMG 快取(改版不清掉、快取優先,省流量又快);
 // 頁面網路優先但 3 秒沒回應就先用快取(車上/訊號差時不會卡白畫面)
-const VERSION = 'kq-enc-v56';
+const VERSION = 'kq-enc-v57';
 const IMG = 'kq-img-v1';
 const AUD = 'kq-aud-v2';   // v2 2026-11-23 英文換微軟 Jenny:同名檔內容變了,舊快取(v1)由 activate 整個刪掉,播到再抓
 // v1:   // 2026-11-23 預錄語音(audio/*.mp3):和圖片一樣獨立快取、快取優先、改版不清
